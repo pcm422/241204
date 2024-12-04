@@ -46,6 +46,28 @@ JOIN inventory i ON r.inventory_id = i.inventory_id
 JOIN film f ON i.film_id = f.film_id
 GROUP BY c.customer_id, c.first_name, c.last_name, f.title;
 
+SELECT c.customer_id AS id, c.first_name AS first_name, c.last_name AS last_name, r.rental_date AS rental_date, f.title AS film_title FROM customer c
+JOIN rental r ON c.customer_id = r.customer_id
+JOIN inventory i ON r.inventory_id = i.inventory_id
+JOIN film f ON i.film_id = f.film_id
+JOIN (
+    SELECT customer_id, MAX(rental_date) AS max_rental_date FROM rental
+    GROUP BY customer_id
+    ) 
+    latest_rental 
+    ON r.customer_id = latest_rental.customer_id 
+    AND r.rental_date = latest_rental.max_rental_date
+ORDER BY id;
+
+SELECT c.customer_id, c.first_name, c.last_name, r.rental_date AS last_rental_date, f.title FROM customer c
+JOIN rental r ON c.customer_id = r.customer_id
+JOIN inventory i ON r.inventory_id = i.inventory_id
+JOIN film f ON i.film_id = f.film_id
+WHERE r.rental_date = (
+    SELECT MAX(r2.rental_date) FROM rental r2
+    WHERE r2.customer_id = c.customer_id
+);
+
 # 문제 4 : 각 영화별 평균 대여 기간 조회
 SELECT f.title, AVG(DATEDIFF(r.return_date, r.rental_date)) as avg_rental_period FROM film f
 JOIN inventory i ON f.film_id = i.film_id
