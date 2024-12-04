@@ -3,7 +3,7 @@ import pymysql
 connection = pymysql.connect(
     host='localhost',
     user='root',
-    password='990924',
+    password='990924', # 자신의 패스워드를 넣어서 실행
     db='airbnb',
     charset='utf8mb4',
     cursorclass=pymysql.cursors.DictCursor
